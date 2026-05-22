@@ -1,0 +1,27 @@
+name: Retag and Push to Docker Hub
+
+on:
+  push:
+    branches:
+      - main  # Jab bhi aap main branch me code push karenge, ye chal jayega
+  workflow_dispatch: # Isse aap GitHub UI se manual bhi click karke chala sakte hain
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Docker Hub me securely login karna
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+    # 2. Image pull, retag aur push karna
+    - name: Pull, Tag, and Push Image
+      run: |
+        docker pull feelingsurf/viewer:stable
+        docker tag feelingsurf/viewer:stable ${{ secrets.DOCKER_HUB_USERNAME }}/feel:latest
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/feel:latest
+        
